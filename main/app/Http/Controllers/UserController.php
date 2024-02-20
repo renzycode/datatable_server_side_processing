@@ -11,23 +11,21 @@ class UserController extends Controller
         return view('index');
     }
     public function view_persons(Request $request){
-        // Get the parameters sent by DataTables for pagination
-        $start = $request->input('start', 0); // Start index
-        $length = $request->input('length', 10); // Number of records per page
 
-        // Query the database and limit the results
-        $data = DB::table('persons')
-            ->skip($start) // Start index for pagination
-            ->take($length) // Number of records per page
-            ->get();
+        $FirstName = strip_tags($request->input('FirstName'));
 
-        // Get the total number of records without filtering
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 10);
+
+        // Retrieve the data
+        $data = DB::table('persons')->where('FirstName', 'like', '%' . $FirstName  . '%')->skip($start)->take($length)->get();
+
         $recordsTotal = DB::table('persons')->count();
 
         return response()->json([
             'draw' => $request->input('draw'),
             'recordsTotal' => $recordsTotal,
-            'recordsFiltered' => $recordsTotal, // For simplicity, same as recordsTotal
+            'recordsFiltered' => $recordsTotal,
             'data' => $data,
         ]);
     }
